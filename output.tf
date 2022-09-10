@@ -1,3 +1,15 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:57775704b84b01527fa4162949373719314e5bcb7556a3be845687cd860c29b8
-size 274
+output "apacheip" {
+  value       = aws_instance.apache.public_ip
+}
+
+output "cicdip" {
+  value = aws_instance.cicd.public_ip
+}
+
+output "apachedns" {
+  value       = aws_instance.apache.public_dns
+}
+
+output "cicddns" {
+  value = aws_instance.cicd.public_dns
+}

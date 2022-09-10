@@ -1,6 +1,6 @@
-resource "aws_security_group" "cicd" {
-  name        = "allow_cicd"
-  description = "Allow cicd inbound traffic"
+resource "aws_security_group" "apache" {
+  name        = "allow_apache"
+  description = "Allow apache inbound traffic"
   vpc_id      = "vpc-0a7e281d11f093663"
 
   ingress {
@@ -14,8 +14,8 @@ resource "aws_security_group" "cicd" {
 
   ingress {
     description = "ssh from endusers"
-    from_port   = 8080
-    to_port     = 8080
+    from_port   = 80
+    to_port     = 80
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
     # security_groups = [aws_security_group.alb.id]
@@ -31,35 +31,28 @@ resource "aws_security_group" "cicd" {
   }
 
   tags = {
-    Name      = "t-cicd-sg"
+    Name      = "t-apache-sg"
     terraform = "true"
   }
 }
 
 
-resource "aws_instance" "cicd" {
+resource "aws_instance" "apache" {
   ami                    = "ami-0b89f7b3f054b957e"
   instance_type          = "t2.micro"
   subnet_id              = "subnet-0d3968836ef6c9d92"
   key_name               = aws_key_pair.demo.id
-  vpc_security_group_ids = [aws_security_group.cicd.id]
+  vpc_security_group_ids = [aws_security_group.apache.id]
   user_data              = <<-EOF
 		#! /bin/bash
-      wget -O /etc/yum.repos.d/jenkins.repo \
-    https://pkg.jenkins.io/redhat-stable/jenkins.repo
-    rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io.key
-    yum update -y
-   amazon-linux-extras install java-openjdk11 -y
-    yum install jenkins -y
-    systemctl enable jenkins
-    systemctl start jenkins
+       yum update -y
+       yum install httpd -y
+      systemctl enable htppd
+      systemctl start httpd 
+      hostnamectl set-hostname apache             
 	    EOF
 
   tags = {
-    Name = "t-cicd"
+    Name = "t-apache"
   }
-  # lifecycle {
-  #   create_before_destroy = true
-  # }
-
 }
