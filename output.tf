@@ -13,3 +13,7 @@ output "apachedns" {
 output "cicddns" {
   value = aws_instance.cicd.public_dns
 }
+
+output "tomcatip" {
+  value = aws_instance.tomcat.private_ip
+}
